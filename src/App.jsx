@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { ModeContext } from './ModeContext';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import AddProfile from './pages/AddProfile';
@@ -17,9 +18,8 @@ import headshot7 from './assets/headshot7.png';
 import headshot8 from './assets/headshot8.png';
 import './index.css';
 
-
 const App = () => {
-  const [theme, setTheme] = useState('light');
+  const { mode, toggleMode } = useContext(ModeContext); // Use ModeContext for theme management
 
   // Initial static profiles
   const initialProfiles = [
@@ -50,40 +50,35 @@ const App = () => {
     fetchProfiles();
   }, []);
 
-  const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
-  };
-
   const addProfile = (profile) => {
     setProfiles([...profiles, profile]);
   };
 
   return (
-    <div className={`app ${theme}`}>
+    <div className={`app ${mode}`}> {/* Use mode from ModeContext */}
       <header>
-        <Navbar theme={theme} toggleTheme={toggleTheme} />
+        <Navbar theme={mode} toggleTheme={toggleMode} /> {/* Pass toggleMode from ModeContext */}
       </header>
       <main>
-      <Routes>
-        <Route 
-          path="/" 
-          element={
-            <Home 
-              profiles={profiles} 
-              searchTerm={searchTerm} 
-              setSearchTerm={setSearchTerm} 
-              selectedRole={selectedRole} 
-              setSelectedRole={setSelectedRole} 
-            />
-          } 
-        />
-        <Route path="/add-profile" element={<AddProfile addProfile={addProfile} theme={theme} />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/profile/:id" element={<ProfileDetail profiles={profiles}  theme={theme} />} />
-        <Route path="/profile/:id/edit" element={<EditProfile profiles={profiles} setProfiles={setProfiles} theme={theme} />} />
-        <Route path="*" element={<NotFound />} />
-    </Routes>
-
+        <Routes>
+          <Route 
+            path="/" 
+            element={
+              <Home 
+                profiles={profiles} 
+                searchTerm={searchTerm} 
+                setSearchTerm={setSearchTerm} 
+                selectedRole={selectedRole} 
+                setSelectedRole={setSelectedRole} 
+              />
+            } 
+          />
+          <Route path="/add-profile" element={<AddProfile addProfile={addProfile} theme={mode} />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/profile/:id" element={<ProfileDetail profiles={profiles} theme={mode} />} />
+          <Route path="/profile/:id/edit" element={<EditProfile profiles={profiles} setProfiles={setProfiles} theme={mode} />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </main>
     </div>
   );
